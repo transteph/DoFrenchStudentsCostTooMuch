@@ -1,10 +1,13 @@
-#   ---   script.r  ---
+# --------------- script.r -----------------------
 #
 #     January 2019 Datathon
-#
-# ----------------------
+#   
+#     Gloriana Lang, India Hayler Kerle, Francesco Lanzone, 
+#     Maximilian Gahntz, and Stephanie Tran
+# 
+# --------------------------------------------------
 
-# required packages 
+# required packages (run once)
 install.packages('car')
 install.packages('tidyverse')
 install.packages('readr')
@@ -21,18 +24,25 @@ install.packages('tmaptools')
 install.packages('OpenStreetMap', dependencies = TRUE)
 devtools::install_github("r-lib/httr")
 install.packages('stringr')
+install.packages('sqldf')
+install.packages('xlsx')
+install.packages("maps")
+install.packages("mapproj")
+install.packages('geojsonio')
+install.packages('geojsonlint')
+install.packages('broom')
+install.packages('jsonlite')
 
-
-#     SETTING UP 
+# ----------------------------
+#    --- SETTING UP ---
 # 
-#
+#----------------------------
 library(dplyr)    
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(fuzzyjoin)
 library(hrbrthemes)
-# sf primarily for vector data
 library(sf)
 library(mapview)
 library(leaflet)
@@ -42,45 +52,140 @@ library(tmaptools)
 library(OpenStreetMap)
 library(stringr)
 suppressPackageStartupMessages(library(tidyverse))
+library(maps)
+library(mapproj)
+library(geojsonio)
+library(geojsonlint)
+library(jsonlite)
+library(broom)
 
-#  IMPORTING DATA SETS
+#----------------------------------------
+#     ---   IMPORTING DATA SETS  ---
 # 
-#
-# expenditure as $ GDP (OECD)
-eduper <- read_csv("./data/OECD_StudentExpenditure-edited.csv")
-view(eduper)
+# ----------------------------------------
 
-# creating plot 
-eduper %>% 
-  select(`Country`, `All expenditure types as GDP percentage`) %>% 
-  View
+#   //  object: eduper    
+#   //  expenditure as $ GDP (OECD)
+eduOecd <- read_csv("./data/OECD_StudentExpenditure-edited.csv")
+eduOecd <- na.omit(eduOecd)
+eduOecd <- select(eduOecd,'country', 'allGdp')
+# export data frame of % GDP as file
+write.xlsx(eduOecd, "./data/edu-oecd.xlsx")
+view(eduOecd)
+
+#   //  temp object: eduregio (for edu)   
+#   //  Effectifs d'étudiants inscrits 2014-15
+eduregio <- read_delim("./data/Enrollment.csv", delim = ";", locale = locale(encoding = "Latin1"))
+studnum <- eduregio %>% 
+  group_by(Région) %>%
+  summarise(studnum = sum(as.numeric(`Effectifs d'étudiants inscrits 2014-15`), na.rm = TRUE))
+
+#   //  temp object: eduexp (for edu)
+#   //  spending data
+eduexp <- read_delim("./data/SpendingData.csv", delim = ";", locale = locale(encoding = "Latin1"))
+# removing unwanted columns
+studnum <- studnum[-c(5, 7),]
+studnum <- studnum[-c(7, 8, 11, 12),]
+eduexp <- eduexp[-c(14:70),]
+
+# changing col name to match each other
+eduexp$Region[13] <- "Provence-Alpes-Côte d'Azur"
+colnames(eduexp) <- c("Région", "Total Spending", "Regional Councils", "Departmental Councils", "Communes and EPCI", "X6")
+
+#   //  object: edu    
+#   //  Total spending per student 
+edu <- left_join(eduexp, studnum, by = NULL)
+edu$X6 <- NULL
+rm(eduregio, eduexp, studnum)
+
+# creating spending per student column
+edu$SpendingPerStudent <- (edu$`Total Spending`*1000000/edu$studnum)
+# view(edu$SpendingPerStudent)
+view(edu)
+# export .csv file of data frame
+# write.csv(edu, file = "./data/spending-per-capita.csv")
+
+
+#
+# --  merge spending per capita table with geographic location
+#
+
+#   //  object: regionsAndSpending
+#   //  spatial data on regions of France and create map
+regdata <- fromJSON("./data/map.geojson")
+# view region names from nested json file
+str(regdata$features$geometry)
+# create list of geometry points from json data
+points <- (regdata$features$geometry)
+
+# create dataframe with region names and geomtry
+regions <- data.frame("nom" = c(regdata$features$properties$nom),
+                      "location" = points )
+view(regions)
+# merge coordinates into edu object
+regionsAndSpending <- left_join(edu, regions, by = c("Région" = "nom"))
+view(regionsAndSpending)
+
+# ------------------------------------
+#  ----   GRAPH CREATION   ----
+#
+# -----------------------------------
+
+class(regionsAndSpending$location.coordinates)
+
+mpol <- st_multipolygon(regionsAndSpending$location.coordinates)
+
+view(regionsAndSpending$location.coordinates)
+
+regionsAndSpending
+
+# !!!! TO DO: map 
+
+
+# -------------------------------------------
+#    ----    PLOT MAKING     ----   
+#
+# --------------------------------------------
+
+# mode function (via https://www.tutorialspoint.com/r/r_mean_median_mode.htm)
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
 
 # % of gdp spending on all educational expenditures in OECD countries  
-eduper %>% 
+eduMean <- mean(eduOecd$allGdp)
+eduMedian <- median(eduOecd$allGdp)
+eduMode <- getmode(eduOecd$allGdp)
+
+eduOecd <- eduOecd %>% 
   drop_na() %>% 
-  select(`Country`, `All expenditure types as GDP percentage`) %>% 
-  mutate(country = `Country`) %>% 
-  mutate(gdp = fct_reorder(`All expenditure types as GDP percentage`)) %>% 
-  filter(!(gdp == '..' ) )%>% 
+  select(`country`, `allGdp`) %>% 
+  mutate(gdp = `allGdp`) 
+  
+view(eduOecd)
+
+eduOecd %>% 
+  mutate(highlighted= ifelse(`country` == 'France', T, F))  %>% 
+  # set var for France to be highlightd
+  #mutate( ToHighlight = ifelse( cyl == 6, "yes", "no" ) ) %%
   arrange(desc(gdp)) %>% 
-  mutate(colour = if_else(gdp > 1.4, "white", "black")) %>% 
+#  mutate(colour = if_else(gdp > 1, "white", "black")) %>% 
   #group_by(`Country`, `All expenditure types as GDP percentage`) %>% 
-  ggplot(aes(y=gdp, x=country, width = 0.8)) + 
+  ggplot(aes(x = reorder(`country`, gdp), y = gdp)) + 
   #adding layer, a bar chart
-  geom_bar(stat = "identity", fill = '#086375') +
+  geom_bar(stat = "identity", aes(fill = highlighted)) +
   coord_flip() +
-  geom_text(aes(label = country, y = gdp, colour = colour), hjust = "inward", 
-            vjust = "center", size = 2) +
-  scale_color_manual(values = c("black", "white"), guide = FALSE) +
+  geom_text(aes(label = country, y = gdp, colour = 'white'), colour='white', hjust = 1, 
+            vjust = "center", size = 2.8, nudge_y = -0.03) +
+  scale_fill_manual(values = c('#086375','#D81159') , guide = FALSE) +
   scale_x_discrete(labels = NULL) +
+  scale_y_continuous(breaks=seq(0,2.6,0.2), labels = NULL) +
   xlab("") +
   ylab("") +
-  theme(axis.ticks.y = element_blank()) +
+  # theme(axis.ticks.y = element_blank()) +
   theme_ipsum(grid = "X") +
-  theme(plot.title = element_text(size = 12)) + 
-  labs(title = "Education expenditure in OECD countries as % of GDP", caption = "Source: OECD, computation by Sciences Po students.")
-
-
-
-
+  theme(plot.title = element_text(size = 12),
+        legend.position = 'none') +
+  labs(title = "Education expenditure in OECD countries as % of GDP (2015)", caption = "Source: OECD, computation by Sciences Po students.")
 
