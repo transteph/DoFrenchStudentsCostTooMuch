@@ -4,9 +4,7 @@ Project by Gloriana Lang, India Hayler Kerle, Francesco Lanzone, Maximilian Gahn
 
 January 2019 Sciences Po Datathon 💻
 
-# Introduction
-
-# OECD DATASET
-All public and private education institutions. Expenditure for full-time students. 
+# Plots
+** All public and private education institutions. Expenditure for full-time students**
 
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/Rplot02.png?raw=true "Education expenditure in OECD countries as % of GDP (2015)")
