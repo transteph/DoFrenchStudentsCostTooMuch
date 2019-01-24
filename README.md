@@ -7,7 +7,7 @@ January 2019 Sciences Po Datathon 💻
 # Plots
 All public and private education institutions. Expenditure for full-time students as percentage of GDP in OECD countries (2015):
 
-![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/eduExpendOecd.png?raw=true "Education expenditure in OECD countries as % of GDP (2015)")
+![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/oecdEdu.png?raw=true "Education expenditure in OECD countries as % of GDP (2015)")
 
 Spending per student across regions in France:
 
