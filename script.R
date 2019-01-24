@@ -33,8 +33,8 @@ install.packages('geojsonlint')
 install.packages('broom')
 install.packages('jsonlite')
 install.packages('rmapshaper')
-install.packages('RColorBrewer')
-webshot::install_phantomjs()
+install.packages('knitr')
+
 # ----------------------------
 #    --- SETTING UP ---
 # 
@@ -60,7 +60,7 @@ library(geojsonio)
 library(jsonlite)
 library(broom)
 library(rmapshaper)
-
+library(knitr)
 #----------------------------------------
 #     ---   IMPORTING DATA SETS  ---
 # 

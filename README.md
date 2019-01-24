@@ -2,6 +2,8 @@
 
 ⚡️ Project by Gloriana Lang, India Hayler Kerle, Francesco Lanzone, Maximilian Gahntz, and Stephanie Tran ⚡️
 
+[View our presentation.](https://transteph.github.io/DoFrenchStudentsCostTooMuch/mapStudents.html)
+
 # Plots
 **All public and private education institutions. Expenditure for full-time students as percentage of GDP in OECD countries (2015):**<br/>
 
@@ -24,7 +26,7 @@ median: 103216<br/>
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapStudents.png?raw=true "Number of students per region in France")
 
 ## A Little Walkthrough
-After two full days of Advanced R lessons by Joel Gombin [(@joelgombin)](https://github.com/joelgombin) we were thrown head-first into a Datathon -  1.5 days of aquiring, cleaning, analyzing (and a bit of hair-pulling) with 'open' data. Led by Timothée Gidoin [@Gidoin](https://github.com/Gidoin), it was a lot of trial and error. And error. And error. 
+After two full days of Advanced R lessons by Joel Gombin [(@joelgombin)](https://github.com/joelgombin) we were thrown head-first into a Datathon -  1.5 days of aquiring, cleaning, analyzing (and a bit of hair-pulling) with 'open' data. Led by Timothée Gidoin [@Gidoin](https://github.com/Gidoin), it was a lot of trial and error. And error...and error. 
 
-Joel taught us **a lot** even with such a short amount of time. 
+First thing's first: loading all of the required libraries. 
 
