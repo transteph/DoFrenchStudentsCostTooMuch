@@ -33,6 +33,7 @@ install.packages('geojsonlint')
 install.packages('broom')
 install.packages('jsonlite')
 install.packages('rmapshaper')
+install.packages('RColorBrewer')
 
 # ----------------------------
 #    --- SETTING UP ---
@@ -56,10 +57,10 @@ suppressPackageStartupMessages(library(tidyverse))
 library(maps)
 library(mapproj)
 library(geojsonio)
-library(geojsonlint)
 library(jsonlite)
 library(broom)
 library(rmapshaper)
+library(RColorBrewer)
 
 
 #----------------------------------------
@@ -229,27 +230,38 @@ nameSpend <- regionsAndSpending %>%
   select(nom, `SpendingPerStudent`, `studnum`) 
 view(nameSpend)
 
-# merge map coordionates, student numbers, region names
-tempmerged <- merge(frReg, nameSpend, by=c("nom",'nom'),no.dups=TRUE)
-view(tempmerged)
 
-mergedMap <- mapview(tempmerged,use.layer.names = TRUE, legend=FALSE)
-mergedMaps
+#   //  data frame: Regions    
+#   //  obj with spatial data of regions, spending per student, numnber of students
+#
+# merge map coordionates, student numbers, region names
+Regions <- merge(frReg, nameSpend, by=c("nom",'nom'),no.dups=TRUE)
+view(Regions)
+
+# calc central tendencies
+spendMean <- mean(Regions$SpendingPerStudent)
+spendMean  # 318.3187
+spendMed <- median(Regions$SpendingPerStudent)
+spendMed  # 278.0577
+
+
+#   //  mapview: mergedMap   
+#   //  map with data on spending per student, numnber of students
+#
+# create color palette
+pal <- colorRampPalette(c("#15f2df","#0ba396", "#001917"))
+mergedMap <- mapview(Regions,
+                     zcol = 'SpendingPerStudent', 
+                     at = seq(100, 600, by = 160), col.regions=pal)
+mergedMap
 
 # add labels
-frMap <- addStaticLabels(tempmerged,
+frMap <- addStaticLabels(mergedMap,
                 label = tempmerged$nom)
 frMap
 
-
-
-
-#   //  object: mapSpending
-#   //  spatial data on regions of France and create map
-mapSpending <- na.omit(read_csv("./data/France1.csv"))
-mapSpending$X6 <- NULL
-
-view(mapSpending)
-
+## create .html and .png
+mapshot(frMap, url = paste0(getwd(), "/mapSpend.html"),
+        file = paste0(getwd(), "/mapASpend.png"))
 
 
