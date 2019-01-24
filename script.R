@@ -157,7 +157,7 @@ getmode <- function(v) {
 eduMean <- mean(eduOecd$allGdp)
 eduMedian <- median(eduOecd$allGdp)
 eduMode <- getmode(eduOecd$allGdp)
-
+eduMean
 eduOecd <- eduOecd %>% 
   drop_na() %>% 
   select(`country`, `allGdp`) %>% 
@@ -175,17 +175,19 @@ eduOecd %>%
   ggplot(aes(x = reorder(`country`, gdp), y = gdp)) + 
   #adding layer, a bar chart
   geom_bar(stat = "identity", aes(fill = highlighted)) +
+  # add line indicasting average
+  geom_hline(aes(yintercept = mean(gdp)),col='orange',size=1, alpha=0.4) +
+  geom_text(aes(0,mean(gdp)),label = 'Average: 1.5%', vjust = -1, hjust=0, nudge_x = 2, nudge_y=0.03) + 
   coord_flip() +
   geom_text(aes(label = country, y = gdp, colour = 'white'), colour='white', hjust = 1, 
             vjust = "center", size = 2.8, nudge_y = -0.03) +
   scale_fill_manual(values = c('#086375','#D81159') , guide = FALSE) +
   scale_x_discrete(labels = NULL) +
-  scale_y_continuous(breaks=seq(0,2.6,0.2), labels = NULL) +
+  scale_y_continuous(breaks=seq(0,2.6,0.2)) +
   xlab("") +
   ylab("") +
   # theme(axis.ticks.y = element_blank()) +
   theme_ipsum(grid = "X") +
-  theme(plot.title = element_text(size = 12),
-        legend.position = 'none') +
+  theme(plot.title = element_text(size = 12)) +
   labs(title = "Education expenditure in OECD countries as % of GDP (2015)", caption = "Source: OECD, computation by Sciences Po students.")
 
