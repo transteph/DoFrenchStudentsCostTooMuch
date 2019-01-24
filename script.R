@@ -18,7 +18,7 @@ install.packages('hrbrthemes', dependencies = TRUE)
 hrbrthemes::import_roboto_condensed() 
 install.packages('sf', dependencies = TRUE)
 install.packages('mapview')
-install.packages('leaflet')
+devtools::install_github('rstudio/leaflet')
 install.packages('tmap')
 install.packages('tmaptools')
 install.packages('OpenStreetMap', dependencies = TRUE)
@@ -32,6 +32,7 @@ install.packages('geojsonio')
 install.packages('geojsonlint')
 install.packages('broom')
 install.packages('jsonlite')
+install.packages('rmapshaper')
 
 # ----------------------------
 #    --- SETTING UP ---
@@ -58,6 +59,8 @@ library(geojsonio)
 library(geojsonlint)
 library(jsonlite)
 library(broom)
+library(rmapshaper)
+
 
 #----------------------------------------
 #     ---   IMPORTING DATA SETS  ---
@@ -76,6 +79,7 @@ view(eduOecd)
 #   //  temp object: eduregio (for edu)   
 #   //  Effectifs d'étudiants inscrits 2014-15
 eduregio <- read_delim("./data/Enrollment.csv", delim = ";", locale = locale(encoding = "Latin1"))
+view(eduregio)
 studnum <- eduregio %>% 
   group_by(Région) %>%
   summarise(studnum = sum(as.numeric(`Effectifs d'étudiants inscrits 2014-15`), na.rm = TRUE))
@@ -83,6 +87,7 @@ studnum <- eduregio %>%
 #   //  temp object: eduexp (for edu)
 #   //  spending data
 eduexp <- read_delim("./data/SpendingData.csv", delim = ";", locale = locale(encoding = "Latin1"))
+view(eduexp)
 # removing unwanted columns
 studnum <- studnum[-c(5, 7),]
 studnum <- studnum[-c(7, 8, 11, 12),]
@@ -106,17 +111,9 @@ view(edu)
 # write.csv(edu, file = "./data/spending-per-capita.csv")
 
 
-#
-# --  merge spending per capita table with geographic location
-#
 
 #   //  object: regionsAndSpending
 #   //  spatial data on regions of France and create map
-regdata <- fromJSON("./data/map.geojson")
-# view region names from nested json file
-str(regdata$features$geometry)
-# create list of geometry points from json data
-points <- (regdata$features$geometry)
 
 # create dataframe with region names and geomtry
 regions <- data.frame("nom" = c(regdata$features$properties$nom),
@@ -132,8 +129,6 @@ mpol <- st_multipolygon(regionsAndSpending$location.coordinates)
 view(regionsAndSpending)
 
 regionsAndSpending
-
-# !!!! TO DO: map 
 
 
 # -------------------------------------------
@@ -171,7 +166,7 @@ eduOecd %>%
   geom_bar(stat = "identity", aes(fill = highlighted)) +
   # add line indicating average
   geom_hline(aes(yintercept = mean(gdp)),col='orange',size=1, alpha=0.4) +
-  geom_text(aes(0,mean(gdp)),label = 'Average: 1.5%', vjust = -1, hjust=0, nudge_x = 2, nudge_y=0.03) + 
+  geom_text(aes(0,mean(gdp)),label = 'Average: 1.5%', vjust = -1, hjust=0, nudge_x = 2, nudge_y=0.03,  family="Roboto Condensed") + 
   coord_flip() +
   geom_text(aes(label = country, y = gdp, colour = 'white'), colour='white', hjust = 1, 
             vjust = "center", size = 2.8, nudge_y = -0.03) +
@@ -215,5 +210,46 @@ regionsAndSpending %>%
   scale_fill_manual(values = c('#218380','#D81159') , guide = FALSE) +
   theme(plot.title = element_text(size = 12)) +
   labs(title = "Spending per student in each region in France", caption = "Source: Ministère de l'Éducation nationale et de la Jeunesse, computation by Sciences Po students.")
+
+
+
+# -------------------------------------------
+#    ----    MAP MAKING     ----   
+#
+# --------------------------------------------
+
+# region data: https://github.com/gregoiredavid/france-geojson
+
+# import spatial data on Paris toilets
+frReg <- read_sf("./data/regions-version-simplifiee.geojson")
+
+# --  merge spending per capita table with geographic location
+nameSpend <- regionsAndSpending %>% 
+  mutate(nom = `Région`) %>% 
+  select(nom, `SpendingPerStudent`, `studnum`) 
+view(nameSpend)
+
+# merge map coordionates, student numbers, region names
+tempmerged <- merge(frReg, nameSpend, by=c("nom",'nom'),no.dups=TRUE)
+view(tempmerged)
+
+mergedMap <- mapview(tempmerged,use.layer.names = TRUE, legend=FALSE)
+mergedMaps
+
+# add labels
+frMap <- addStaticLabels(tempmerged,
+                label = tempmerged$nom)
+frMap
+
+
+
+
+#   //  object: mapSpending
+#   //  spatial data on regions of France and create map
+mapSpending <- na.omit(read_csv("./data/France1.csv"))
+mapSpending$X6 <- NULL
+
+view(mapSpending)
+
 
 
