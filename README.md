@@ -1,8 +1,8 @@
 # DoFrenchStudentsCostTooMuch?
 
-⚡️ Project by Gloriana Lang, India Hayler Kerle, Francesco Lanzone, Maximilian Gahntz, and Stephanie Tran ⚡️
+Project by Gloriana Lang, India Hayler Kerle, Francesco Lanzone, Maximilian Gahntz, and Stephanie Tran 
 
-[View our presentation.](https://transteph.github.io/DoFrenchStudentsCostTooMuch/mapStudents.html)
+[⚡️ View our presentation! ⚡️](https://docs.google.com/presentation/d/1W6r5FrUzJthNWkQgwghXg9Jb9RXeM5Y1SuN07OKXSI8/edit?usp=sharing)
 
 # Plots
 **All public and private education institutions. Expenditure for full-time students as percentage of GDP in OECD countries (2015):**<br/>
