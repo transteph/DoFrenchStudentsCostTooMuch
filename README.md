@@ -10,9 +10,17 @@ All public and private education institutions. Expenditure for full-time student
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/oecdEdu.png?raw=true "Education expenditure in OECD countries as % of GDP (2015)")
 
 Spending per student across regions in France:
-
+mean:   318.3187
+median: 278.0577
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/frRegionsSpendingPerStudent.png?raw=true "Spending per student in each region in France")
 
 Spending per student across regions in France (mapview):
-
+mean:   318.3187
+median: 278.0577
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapSpend.png?raw=true "Spending per student in each region in France (mapview)")
+
+Number of students per region in France (mapview):
+mean:   131826.3
+median: 103216
+![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapStudents.png?raw=true "Number of students per region in France")
+

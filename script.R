@@ -60,7 +60,6 @@ library(geojsonio)
 library(jsonlite)
 library(broom)
 library(rmapshaper)
-library(RColorBrewer)
 
 #----------------------------------------
 #     ---   IMPORTING DATA SETS  ---
@@ -249,6 +248,7 @@ spendMed  # 278.0577
 #
 # create color palette
 pal <- colorRampPalette(c("#15f2df","#0ba396", "#001917"))
+
 mergedMap <- mapview(Regions,
                      zcol = 'SpendingPerStudent', 
                      at = seq(100, 600, by = 160), col.regions=pal)
@@ -262,4 +262,37 @@ frMap
 ## create .html 
 mapshot(frMap, url = paste0(getwd(), "/mapSpend.html"))
 
+
+
+#   //  mapview: mapStudents
+#   //  region and student numbers  
+#
+# calc central tendencies
+stuMean <- mean(Regions$studnum)
+stuMean  # 131826.3
+stuMed <- median(Regions$studnum)
+stuMed  # 103216
+
+# create color palette
+pal2 <- colorRampPalette(c("#adf7e3","#83eafc","#3998e5", "#050291"))
+
+# change colummn name (since it will appear in the legend)
+RegionsInFrance <- Regions %>%  
+  mutate('Number of Students' = `studnum`)
+
+tempMap <- mapview(RegionsInFrance,
+                     zcol = 'Number of Students', 
+                    at = seq(3000, 500000, by = 5000),
+                      col.regions=pal2,
+                   alpha.regions = 0.9
+                   )
+tempMap
+
+# add labels
+mapStudents <- addStaticLabels(tempMap,
+                         label = tempmerged$nom)
+mapStudents
+
+## create .html 
+mapshot(mapStudents, url = paste0(getwd(), "/mapStudents.html"))
 
