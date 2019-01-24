@@ -274,7 +274,7 @@ stuMed <- median(Regions$studnum)
 stuMed  # 103216
 
 # create color palette
-pal2 <- colorRampPalette(c("#adf7e3","#83eafc","#3998e5", "#050291"))
+#pal2 <- colorRampPalette(c("#adf7e3","#83eafc","#3998e5", "#050291"))
 
 # change colummn name (since it will appear in the legend)
 RegionsInFrance <- Regions %>%  
@@ -283,7 +283,7 @@ RegionsInFrance <- Regions %>%
 tempMap <- mapview(RegionsInFrance,
                      zcol = 'Number of Students', 
                     at = seq(3000, 500000, by = 5000),
-                      col.regions=pal2,
+                      #col.regions=pal2,
                    alpha.regions = 0.9
                    )
 tempMap
