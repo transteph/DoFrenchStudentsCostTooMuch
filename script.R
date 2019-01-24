@@ -106,29 +106,8 @@ rm(eduregio, eduexp, studnum)
 edu$SpendingPerStudent <- (edu$`Total Spending`*1000000/edu$studnum)
 # view(edu$SpendingPerStudent)
 view(edu)
-# export .csv file of data frame
-# write.csv(edu, file = "./data/spending-per-capita.csv")
 
-
-
-#   //  object: regionsAndSpending
-#   //  spatial data on regions of France and create map
-
-# create dataframe with region names and geomtry
-regions <- data.frame("nom" = c(regdata$features$properties$nom),
-                      "location" = points )
-view(regions)
-# merge coordinates into edu object
-regionsAndSpending <- left_join(edu, regions, by = c("Région" = "nom"))
-view(regionsAndSpending)
-
-class(regionsAndSpending$location.coordinates)
-
-mpol <- st_multipolygon(regionsAndSpending$location.coordinates)
-view(regionsAndSpending)
-
-regionsAndSpending
-
+regionsAndSpending <- edu
 
 # -------------------------------------------
 #    ----    PLOT MAKING     ----   
@@ -219,7 +198,6 @@ regionsAndSpending %>%
 
 # region data: https://github.com/gregoiredavid/france-geojson
 
-# import spatial data on Paris toilets
 frReg <- read_sf("./data/regions-version-simplifiee.geojson")
 
 # --  merge spending per capita table with geographic location
@@ -256,7 +234,7 @@ mergedMap
 
 # add labels
 frMap <- addStaticLabels(mergedMap,
-                label = tempmerged$nom)
+                label = Regions$nom)
 frMap
 
 ## create .html 
@@ -290,7 +268,7 @@ tempMap
 
 # add labels
 mapStudents <- addStaticLabels(tempMap,
-                         label = tempmerged$nom)
+                         label = RegionsInFrance$nom)
 mapStudents
 
 ## create .html 
