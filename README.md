@@ -15,4 +15,4 @@ Spending per student across regions in France:
 
 Spending per student across regions in France (mapview):
 
-![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapSpend.PNG?raw=true "Spending per student in each region in France (mapview)")
+![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapSpend.png?raw=true "Spending per student in each region in France (mapview)")
