@@ -12,3 +12,7 @@ All public and private education institutions. Expenditure for full-time student
 Spending per student across regions in France:
 
 ![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/frRegionsSpendingPerStudent.png?raw=true "Spending per student in each region in France")
+
+Spending per student across regions in France (mapview):
+
+![Plot](https://github.com/transteph/DoFrenchStudentsCostTooMuch/blob/master/mapSpend.PNG?raw=true "Spending per student in each region in France (mapview)")

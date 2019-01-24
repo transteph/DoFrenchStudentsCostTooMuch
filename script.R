@@ -34,7 +34,7 @@ install.packages('broom')
 install.packages('jsonlite')
 install.packages('rmapshaper')
 install.packages('RColorBrewer')
-
+webshot::install_phantomjs()
 # ----------------------------
 #    --- SETTING UP ---
 # 
@@ -61,7 +61,6 @@ library(jsonlite)
 library(broom)
 library(rmapshaper)
 library(RColorBrewer)
-
 
 #----------------------------------------
 #     ---   IMPORTING DATA SETS  ---
@@ -260,8 +259,7 @@ frMap <- addStaticLabels(mergedMap,
                 label = tempmerged$nom)
 frMap
 
-## create .html and .png
-mapshot(frMap, url = paste0(getwd(), "/mapSpend.html"),
-        file = paste0(getwd(), "/mapASpend.png"))
+## create .html 
+mapshot(frMap, url = paste0(getwd(), "/mapSpend.html"))
 
 
