@@ -126,16 +126,10 @@ view(regions)
 regionsAndSpending <- left_join(edu, regions, by = c("Région" = "nom"))
 view(regionsAndSpending)
 
-# ------------------------------------
-#  ----   GRAPH CREATION   ----
-#
-# -----------------------------------
-
 class(regionsAndSpending$location.coordinates)
 
 mpol <- st_multipolygon(regionsAndSpending$location.coordinates)
-
-view(regionsAndSpending$location.coordinates)
+view(regionsAndSpending)
 
 regionsAndSpending
 
@@ -175,13 +169,13 @@ eduOecd %>%
   ggplot(aes(x = reorder(`country`, gdp), y = gdp)) + 
   #adding layer, a bar chart
   geom_bar(stat = "identity", aes(fill = highlighted)) +
-  # add line indicasting average
+  # add line indicating average
   geom_hline(aes(yintercept = mean(gdp)),col='orange',size=1, alpha=0.4) +
   geom_text(aes(0,mean(gdp)),label = 'Average: 1.5%', vjust = -1, hjust=0, nudge_x = 2, nudge_y=0.03) + 
   coord_flip() +
   geom_text(aes(label = country, y = gdp, colour = 'white'), colour='white', hjust = 1, 
             vjust = "center", size = 2.8, nudge_y = -0.03) +
-  scale_fill_manual(values = c('#086375','#D81159') , guide = FALSE) +
+  scale_fill_manual(values = c('#218380','#D81159') , guide = FALSE) +
   scale_x_discrete(labels = NULL) +
   scale_y_continuous(breaks=seq(0,2.6,0.2)) +
   xlab("") +
@@ -190,4 +184,36 @@ eduOecd %>%
   theme_ipsum(grid = "X") +
   theme(plot.title = element_text(size = 12)) +
   labs(title = "Education expenditure in OECD countries as % of GDP (2015)", caption = "Source: OECD, computation by Sciences Po students.")
+
+mpol <- st_multipolygon(regionsAndSpending$location.coordinates)
+view(regionsAndSpending)
+
+
+regionMean <- mean(regionsAndSpending$SpendingPerStudent)
+regionMedian <- median(regionsAndSpending$SpendingPerStudent)
+
+regionMean
+
+regionsAndSpending %>% 
+  ggplot(aes(x = reorder(`Région`, `SpendingPerStudent`), y = `SpendingPerStudent`)) +
+  #adding layer, a bar chart
+  geom_bar(stat = "identity", aes(fill = "purple"))+
+ # geom_text(aes(0,mean(gdp)),label = 'Average: 1.5%', vjust = -1, hjust=0, nudge_x = 2, nudge_y=0.03) + 
+  #geom_text(aes(label = country, y = gdp, colour = 'white'), colour='white', hjust = 1, 
+  #          vjust = "center", size = 2.8, nudge_y = -0.03) +
+  # theme(axis.ticks.y = element_blank()) +
+  coord_flip() + 
+  scale_y_continuous(breaks=seq(0, 700, by = 50)) +
+  xlab("") +
+  ylab("") +
+  # add line indicating average
+  geom_hline(aes(yintercept = mean(`SpendingPerStudent`)),col='orange',size=1, alpha=0.4) +
+  geom_text(aes(label = sprintf("%0.2f", round(`SpendingPerStudent`, digits = 2)), y = `SpendingPerStudent`, colour = 'white'), colour='white', hjust = 1, 
+            vjust = "center", size = 3.0, nudge_y = -4) +
+ annotate("text", x = 4, y = 380, label = "Average: 318.32", family="Roboto Condensed") + 
+  theme_ipsum(grid = "X") +
+  scale_fill_manual(values = c('#218380','#D81159') , guide = FALSE) +
+  theme(plot.title = element_text(size = 12)) +
+  labs(title = "Spending per student in each region in France", caption = "Source: Ministère de l'Éducation nationale et de la Jeunesse, computation by Sciences Po students.")
+
 
