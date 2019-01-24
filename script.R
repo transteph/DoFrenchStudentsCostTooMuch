@@ -296,3 +296,9 @@ mapStudents
 ## create .html 
 mapshot(mapStudents, url = paste0(getwd(), "/mapStudents.html"))
 
+
+#
+#       That's all, folks! 
+#
+# ------------------------------------------------------------------# 
+
