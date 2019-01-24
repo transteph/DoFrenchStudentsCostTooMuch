@@ -165,6 +165,8 @@ eduOecd <- eduOecd %>%
   
 view(eduOecd)
 
+
+
 eduOecd %>% 
   mutate(highlighted= ifelse(`country` == 'France', T, F))  %>% 
   # set var for France to be highlightd
